@@ -5,7 +5,7 @@ library UnitAlloc requires /*
 	// UnitAlloc v1.0.1
 	// by jondrean
 	
-	// Links units together
+	// Module that links units together
 	
 	// implement UnitAlloc
 	//  method operator unit takes nothing returns unit
