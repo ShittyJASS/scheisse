@@ -57,7 +57,6 @@ library UnitAlloc requires /*
 		debug   call TimerStart(CreateTimer(), 0, false, function PauseGameOn)
 		debug   call Player(1/0)
 		debug endif
-		debug set $STRUCT$($NODE$).UA_used = true
 		static if not DEBUG_MODE and not $STRUCT$.UA_forceLog then
 		else
 			set $STRUCT$($NODE$).UA_used = true
@@ -76,10 +75,9 @@ library UnitAlloc requires /*
 		debug   call TimerStart(CreateTimer(), 0, false, function PauseGameOn)
 		debug   call Player(1/0)
 		debug endif
-		debug set $STRUCT$($NODE$).UA_used = false
 		static if not DEBUG_MODE and not $STRUCT$.UA_forceLog then
 		else
-			set $STRUCT$($NODE$).UA_used = true
+			set $STRUCT$($NODE$).UA_used = false
 		endif
 		if $NODE$ == $STRUCT$(0).next then
 			set $STRUCT$(0).next = $STRUCT$($NODE$).next
