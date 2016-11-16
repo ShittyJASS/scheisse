@@ -4,7 +4,7 @@ library ItemStacks requires /*
     */ optional RegisterPlayerUnitEvent /* http://www.hiveworkshop.com/threads/snippet-registerplayerunitevent.203338/
     */
     
-    // Item Stacks v1.0.0
+    // Item Stacks v1.0.1
     // by jondrean
     
     // Upon acquiring an already existing consumable,
@@ -111,45 +111,47 @@ library ItemStacks requires /*
                 set u = null
             elseif -31 == i then // smart
                 set it = GetOrderTargetItem()
-                set u = GetTriggerUnit()
-                set dx = GetItemX(it) - GetUnitX(u)
-                set dy = GetItemY(it) - GetUnitY(u)
-                if 14400 < dx*dx + dy*dy then
-                    call IssuePointOrderById(u, 851971, GetItemX(it), GetItemY(it))
-                    if Approach.empty then
-                        call TimerStart(Approach.C, 0.05, true, function Approach.onExpire)
+                if null != it then
+                    set u = GetTriggerUnit()
+                    set dx = GetItemX(it) - GetUnitX(u)
+                    set dy = GetItemY(it) - GetUnitY(u)
+                    if 14400 < dx*dx + dy*dy then
+                        call IssuePointOrderById(u, 851971, GetItemX(it), GetItemY(it))
+                        if Approach.empty then
+                            call TimerStart(Approach.C, 0.05, true, function Approach.onExpire)
+                        endif
+                        set i = Approach[u]
+                        //! runtextmacro UNITALLOC_ALLOC("Approach", "i")
+                        set Approach(i).it = it
+                        set Approach(i).dt = CreateTrigger()
+                        call TriggerRegisterDeathEvent(Approach(i).dt, u)
+                        call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_ORDER)
+                        call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_POINT_ORDER)
+                        call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_ORDER)
+                        call TriggerAddCondition(Approach(i).dt, Condition(function Approach.onDeath))
+                    else
+                        set c = GetItemCharges(it)
+                        if 0 != c then
+                            set i = 5
+                            set itype = GetItemTypeId(it)
+                            loop
+                                set ite = UnitItemInSlot(u, i)
+                                if itype == GetItemTypeId(ite) then
+                                    call SetItemCharges(ite, GetItemCharges(ite) + c)
+                                    call RemoveItem(it)
+                                    call sPickUp.runUnit(u)
+                                    call IssueImmediateOrderById(u, 851972)
+                                    exitwhen true
+                                endif
+                                exitwhen 0 == i
+                                set i = i - 1
+                            endloop
+                        endif
                     endif
-                    set i = Approach[u]
-                    //! runtextmacro UNITALLOC_ALLOC("Approach", "i")
-                    set Approach(i).it = it
-                    set Approach(i).dt = CreateTrigger()
-                    call TriggerRegisterDeathEvent(Approach(i).dt, u)
-                    call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_ORDER)
-                    call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_POINT_ORDER)
-                    call TriggerRegisterUnitEvent(Approach(i).dt, u, EVENT_UNIT_ISSUED_ORDER)
-                    call TriggerAddCondition(Approach(i).dt, Condition(function Approach.onDeath))
-                else
-                    set c = GetItemCharges(it)
-                    if 0 != c then
-                        set i = 5
-                        set itype = GetItemTypeId(it)
-                        loop
-                            set ite = UnitItemInSlot(u, i)
-                            if itype == GetItemTypeId(ite) then
-                                call SetItemCharges(ite, GetItemCharges(ite) + c)
-                                call RemoveItem(it)
-                                call sPickUp.runUnit(u)
-                                call IssueImmediateOrderById(u, 851972)
-                                exitwhen true
-                            endif
-                            exitwhen 0 == i
-                            set i = i - 1
-                        endloop
-                    endif
+                    set ite = null
+                    set u = null
+                    set it = null
                 endif
-                set ite = null
-                set u = null
-                set it = null
             endif
         endmethod
         static method onPickup takes nothing returns nothing
