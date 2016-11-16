@@ -21,15 +21,6 @@ library ItemStacks requires /*
         private sound snd
     endglobals
     
-    //! textmacro ITEMSTACKS_SOUND takes SND, P        
-        set snd = $SND$.run()
-        if $P$ == GetLocalPlayer() then
-            call SetSoundVolume(snd, 40)
-        else
-            call SetSoundVolume(snd, 0)
-        endif
-    //! endtextmacro
-    
     function UnitTryAddItem takes unit u, item it returns boolean
         local integer i = 5
         local integer itype
