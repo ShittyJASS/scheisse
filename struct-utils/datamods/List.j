@@ -2,6 +2,31 @@ library List requires /*
     */ Alloc        /* https://github.com/ShittyJASS/scheisse/blob/master/struct-utils/Alloc.j
     */
     
+    // List v1.0.1
+    // by jondrean
+    
+    // Singly linked list module
+    
+    // module List
+    //  static method allocate takes nothing returns thistype
+    //      - Returnes unused instance
+    //  method deallocate takes nothing returns nothing
+    //      - Flushes & recycles given instance "this"
+    //
+    //  method add takes nothing returns thistype
+    //      - Stores & returns new index
+    //  method remove takes nothing returns thistype
+    //      - Unstores & returns newest index
+    //  method removeAt takes thistype whichNode returns nothing
+    //      - Unstores given index
+    //  method flush takes nothing returns nothing
+    //      - Removes all associated indexes
+    //
+    //  method operator head takes nothing returns thistype
+    //      - Returns newest index
+    //  method operator empty takes nothing returns boolean
+    //      - Whether instance has no associated indexes
+    
     module List
         
         private static integer alloc = 0
@@ -43,6 +68,29 @@ library List requires /*
             call flush()
             set rec[this] = rec[0]
             set rec[0] = this
+        endmethod
+        
+        method has takes thistype node returns boolean
+            local thistype probe = head
+            loop
+                exitwhen 0 == probe
+                if probe == node then
+                    return true
+                endif
+                set probe = probe.next
+            endloop
+            return false
+        endmethod
+        
+        method length takes nothing returns integer
+            local integer c = 0
+            local thistype probe = head
+            loop
+                exitwhen 0 == probe
+                set c = c + 1
+                set probe = probe.next
+            endloop
+            return c
         endmethod
         
         static if thistype.l_customAlloc then
